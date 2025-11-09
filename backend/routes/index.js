@@ -1,6 +1,7 @@
 import express from "express";
 import Company from "../models/Company.js";
 import axios from "axios";
+import { parseStringPromise } from "xml2js";
 
 const router = express.Router();
 
@@ -187,6 +188,114 @@ router.post("/dislike-company", async (req, res) => {
   } catch (error) {
     console.error("Error disliking company:", error.message);
     res.status(500).json({ error: "Failed to update dislike" });
+  }
+});
+
+router.get("/company-news/:symbol", async (req, res) => {
+  try {
+    const { symbol } = req.params;
+    
+    if (!symbol) {
+      return res.status(400).json({ error: "Symbol is required" });
+    }
+
+    // Find company to get full name
+    const company = await Company.findOne({ SYMBOL: symbol.toUpperCase() });
+    
+    // Create search query - use company name if available, otherwise use symbol
+    const searchQuery = company && company.NAME 
+      ? `${company.NAME} stock OR business`
+      : `${symbol} stock OR business`;
+
+    const encodedQuery = encodeURIComponent(searchQuery);
+    const url = `https://news.google.com/rss/search?q=${encodedQuery}`;
+
+    console.log(`📰 Fetching news for: ${searchQuery}`);
+
+    // Fetch RSS feed
+    const response = await axios.get(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0"
+      },
+      timeout: 10000
+    });
+
+    // Parse XML to JSON
+    const result = await parseStringPromise(response.data);
+    
+    if (!result.rss || !result.rss.channel || !result.rss.channel[0].item) {
+      return res.json({ news: [] });
+    }
+
+    // Extract first 5 news items
+    const items = result.rss.channel[0].item.slice(0, 5);
+    
+    const news = items.map(item => ({
+      title: item.title?.[0] || "No title",
+      link: item.link?.[0] || "#",
+      pubDate: item.pubDate?.[0] || "",
+      source: item.source?.[0]?._ || item.source?.[0] || "Unknown Source"
+    }));
+
+    console.log(`✅ Found ${news.length} news articles`);
+
+    res.json({ 
+      symbol: symbol.toUpperCase(),
+      news 
+    });
+
+  } catch (error) {
+    console.error("Error fetching news:", error.message);
+    res.status(500).json({ 
+      error: "Failed to fetch news",
+      news: [] 
+    });
+  }
+});
+
+// Get top 10 most liked companies
+router.get("/top-liked", async (req, res) => {
+  try {
+    // Find top 10 companies sorted by likes in descending order
+    const topCompanies = await Company.find({ likes: { $gt: 0 } })
+      .sort({ likes: -1 })
+      .limit(10)
+      .select('SYMBOL likes dislikes');
+
+    console.log(`📊 Found ${topCompanies.length} top liked companies`);
+
+    res.json({
+      success: true,
+      count: topCompanies.length,
+      companies: topCompanies
+    });
+
+  } catch (error) {
+    console.error("Error fetching top liked companies:", error.message);
+    res.status(500).json({ error: "Failed to fetch top liked companies" });
+  }
+});
+
+// Get top 10 most disliked companies
+router.get("/top-disliked", async (req, res) => {
+  try {
+    // Find top 10 companies sorted by dislikes in descending order
+    const topCompanies = await Company.find({ dislikes: { $gt: 0 } })
+      .sort({ dislikes: -1 })
+      .limit(10)
+      .select('SYMBOL likes dislikes');
+
+    console.log(`📊 Found ${topCompanies.length} top disliked companies`);
+
+    res.json({
+      success: true,
+      count: topCompanies.length,
+      companies: topCompanies
+    });
+
+  } catch (error) {
+    console.error("Error fetching top disliked companies:", error.message);
+    res.status(500).json({ error: "Failed to fetch top disliked companies" });
   }
 });
 

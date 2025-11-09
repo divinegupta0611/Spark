@@ -40,7 +40,7 @@ const Home = () => {
         <nav className="nav">
           <Link to="/">Home</Link>
           <Link to="/explore">Explore</Link>
-          <Link to="/">Ratings</Link>
+          <Link to="/ratings">Ratings</Link>
           <Link to="/">About</Link>
         </nav>
       </header>
