@@ -41,7 +41,7 @@ const Home = () => {
           <Link to="/">Home</Link>
           <Link to="/explore">Explore</Link>
           <Link to="/ratings">Ratings</Link>
-          <Link to="/">About</Link>
+          <Link to="/about">About</Link>
         </nav>
       </header>
 
