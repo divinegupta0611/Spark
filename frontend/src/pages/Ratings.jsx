@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../style/RatingsCSS.css";
 import { Link } from "react-router-dom";
-
+import NavBar from "../components/NavBar";
 export default function Ratings() {
   const [topLiked, setTopLiked] = useState([]);
   const [topDisliked, setTopDisliked] = useState([]);
@@ -45,16 +45,7 @@ export default function Ratings() {
 
   return (
     <div className="ratings-container">
-      {/* Header */}
-      <header className="header">
-        <div className="logo">Spark</div>
-        <nav className="nav">
-          <Link to="/">Home</Link>
-          <Link to="/explore">Explore</Link>
-          <Link to="/ratings">Ratings</Link>
-          <Link to="/about">About</Link>
-        </nav>
-      </header>
+      <NavBar/>
 
       <div className="ratings-header">
         <h1>Company Rankings</h1>

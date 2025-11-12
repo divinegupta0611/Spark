@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../style/ExploreCSS.css";
 import { Link } from "react-router-dom";
-
+import NavBar from "../components/NavBar";
 export default function Explore() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -250,15 +250,7 @@ export default function Explore() {
 
   return (
     <div className="explore-container">
-      <header className="header">
-        <div className="logo">Spark</div>
-        <nav className="nav">
-          <Link to="/">Home</Link>
-          <Link to="/explore">Explore</Link>
-          <Link to="/ratings">Ratings</Link>
-          <Link to="/about">About</Link>
-        </nav>
-      </header>
+      <NavBar/>
       
       <div className="explore-header">
         <h1>Explore Companies</h1>

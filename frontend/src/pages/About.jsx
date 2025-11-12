@@ -2,20 +2,11 @@
 import React from "react";
 import "../style/AboutCSS.css";
 import { Link } from "react-router-dom";
-
+import NavBar from "../components/NavBar";
 const About = () => {
   return (
     <div className="about-page">
-      {/* Header */}
-      <header className="header">
-        <div className="logo">Spark</div>
-        <nav className="nav">
-          <Link to="/">Home</Link>
-          <Link to="/explore">Explore</Link>
-          <Link to="/ratings">Ratings</Link>
-          <Link to="/about">About</Link>
-        </nav>
-      </header>
+      <NavBar/>
 
       {/* About Section */}
       <section className="about-hero">
@@ -77,7 +68,7 @@ const About = () => {
           <div className="footer-section">
             <h4>Contact</h4>
             <a href="mailto:info@spark.com">info@spark.com</a>
-            <a href="tel:+1234567890">+1 (234) 567-890</a>
+            <a href="tel:8826613045">+91 8826613046</a>
           </div>
           <div className="footer-section">
             <h4>Follow Us</h4>
